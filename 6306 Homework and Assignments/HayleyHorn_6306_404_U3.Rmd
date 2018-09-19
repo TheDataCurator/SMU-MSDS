@@ -1,7 +1,7 @@
 ---
 title: "6306-404 U3 live session Assignment"
 author: "Hayley Horn"
-date: "September 9, 2018"
+date: "September 18, 2018"
 output: html_document  
 ---
 
@@ -14,10 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 Creating a directory  
 `mkdir awesome-public-datasets`
 
-navigate to the new directory  
+Navigate to the new directory  
 `cd awesome-public-datasets`
 
-clone repository  
+Clone repository  
 `git clone https://github.com/caesar0301/awesome-public-datasets`
 
 ###2.	Data Summary
