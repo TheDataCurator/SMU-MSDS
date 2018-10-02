@@ -12,6 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 #setwd("C:/Users/ha406272/Dropbox/SMU/")
 #setwd("C:/Users/hayle/Dropbox/SMU/")
 ```
+Github link to rmd file:https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5.html
+Github link to html file:https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5.html
+Githib link to Codebook: https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5_Codebook.Rmd
+
 
 ###1.Data Munging
 
