@@ -1,0 +1,57 @@
+---
+title: "6306-404 U2 live session Assignment"
+author: "Hayley Horn"
+date: "September 9, 2018"
+output: html_document  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)  
+```  
+####1a What is a basic workflow for reproducible research?
+Data Gathering, Analysis and Presentation  
+
+####1b What are five practical tips for making research reproducible?
+1. Document everything. Note where you got the information, format so there is no ambiguity.
+
+2. Everything is a text file. There is complexity in formatting, use a text file for simplicity.
+
+3. All files should be human readable. Narrate your process inline with commenting and clear process.
+
+4. Explicitly tie your files together. File relationships can be unclear, make it clear and don't leave room for error with unclear keys.
+
+5. Have a plan to organize, store, and make your files available.   
+
+####1c Give an example of how you might implement each tip.
+1. There may be multiple data sources, if one works better than others, I can comment and note the decision process. It's not always obvious on revisit.
+
+2. This is easy, after being tormented by an unprintable character bonking a real time integration, text file with a good text editor can save your hair.
+
+3. To keep things readable, have another set of eyes review, and even better if it is someone that will tell me if they don't understand,
+
+4. Joins need to be clear. Improper joins are a great way to bonk all my data at once. 
+
+5. Establish my end of research plan up front, and use a process that I would hope someone would leave for my team. Data version of do unto others.  
+
+####1d	Which one of these do you think will be the most difficult?
+The last step of making the plan to store and share. If it is an externally held data source, there is a risk of the file being pulled or moved, so this is where, along with the first step that they should know what they are looking at.  
+
+####2a From airquality data, plot temp vs month
+```{r A2 Q2A, echo = TRUE}
+plot(x=airquality$Month, y=airquality$Temp, xlab="Month", ylab="Temperature", main="Temperature by Month")
+```
+
+####2b From airquality data, plot temp vs Ozone
+```{r A2 Q2B, echo = TRUE}
+plot(x=airquality$Temp, y=airquality$Ozone, xlab="Temperature", ylab="Ozone", main="Temperature vs Ozone")
+```
+
+####3a From pressure data, plot temperature vs pressure
+```{r pressure_plot, echo=TRUE}
+plot(pressure$pressure,pressure$temperature, xlab="Pressure",ylab="Temperature", main="Temperature vs Pressure")
+```
+
+####3b From pressure data, plot presssure vs temperature
+```{r pressure_plot2, echo=TRUE}
+plot(pressure$temperature,pressure$pressure, xlab="Temperature",ylab="Pressure", main="Pressure vs Temperature")
+```
