@@ -1,0 +1,194 @@
+---
+title: "Codebook for 6306-404 HW5"
+author: "Hayley Horn"
+date: "October 1, 2018"
+output: html_document
+---
+
+```{r , echo=FALSE, include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(pander)
+```
+
+###Purpose
+The markdown file HayleyHorn_6306_404_U5.Rmd was used to practice data munging, data merging, and data summarizing.
+
+###Summary choices
+The customer wanted the top girls names of 2015 and 2016, so after cleanup and blending, the output was provided with limited fields and sorted descending.
+
+###Raw Data 
+Files: yob2016.txt; yob2015.txt
+
+
+*yob2015.txt Codebook summary table*
+
+-------------------------------------------------------------------
+Label   Variable       Class       # unique  Missing  Description  
+                                     values                        
+------- -------------- --------- ---------- --------- -------------
+        **[Name]**     factor         30553  0.00 %                
+
+        **[Gender]**   factor             2  0.00 %                
+
+        **[Count]**    integer         1397  0.00 %                
+-------------------------------------------------------------------
+
+
+
+
+---------------------------------
+Variable list              Result
+-------------------------------
+Number of observations      33063
+Number of variables             3
+---------------------------------
+
+-------------------------------------
+Name                           Result
+------------------------------------
+Variable type                  factor
+Number of missing obs.        0 (0 %)
+Number of unique values         30553
+Mode                        "Aalijah"
+-------------------------------------
+
+-----------------------------------
+Gender                      Result
+---------------------------------
+Variable type                factor
+Number of missing obs.      0 (0 %)
+Number of unique values           2
+Mode                            "F"
+-----------------------------------
+
+------------------------------------
+Count                       Result
+-----------------------------------
+Variable type                integer
+Number of missing obs.       0 (0 %)
+Number of unique values         1397
+Median                            11
+1st and 3rd quartiles          7; 30
+Min. and max.               5; 20415
+------------------------------------
+Source
+Report generation information:
+ *  Created by Hayley (username: `hayle`).
+ *  Report creation time: Mon Oct 01 2018 19:15:44
+ *  Report Was run from directory: `C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_3`
+ *  dataMaid v1.1.2 [Pkg: 2018-05-03 from CRAN (R 3.5.1)]
+ *  R version 3.5.1 (2018-07-02).
+ *  Platform: x86_64-w64-mingw32/x64 (64-bit)(Windows >= 8 x64 (build 9200)).
+ *  Function call: `makeDataReport(data = y2015, mode = "summarize", file = "codebook_y2015.Rmd", 
+    checks = list(list("showAllFactorLevels")), listChecks = FALSE, 
+    maxProbVals = FALSE, codebook = TRUE, reportTitle = "Codebook for y2015")`
+
+*yob2016.txt Codebook summary table*
+---------------------------------
+Variable list                    Result
+------------------------ --------
+Number of observations      32868
+Number of variables             3
+---------------------------------
+
+-----------------------------------
+Name                        Result
+------------------------------------
+Variable type                  factor
+Number of missing obs.        0 (0 %)
+Number of unique values         30294
+Mode                        "Aalijah"
+-------------------------------------
+
+-----------------------------------
+Gender                      Result
+----------------------------------
+Variable type                factor
+Number of missing obs.      0 (0 %)
+Number of unique values           2
+Mode                            "F"
+-----------------------------------
+
+------------------------------------
+Count                       Result
+-----------------------------------
+Variable type                integer
+Number of missing obs.       0 (0 %)
+Number of unique values         1385
+Median                            12
+1st and 3rd quartiles          7; 30
+Min. and max.               5; 19414
+------------------------------------
+Report generation information:
+ *  Created by Hayley (username: `hayle`).
+ *  Report creation time: Mon Oct 01 2018 19:15:42
+ *  Report Was run from directory: `C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_3`
+ *  dataMaid v1.1.2 [Pkg: 2018-05-03 from CRAN (R 3.5.1)]
+ *  R version 3.5.1 (2018-07-02).
+ *  Platform: x86_64-w64-mingw32/x64 (64-bit)(Windows >= 8 x64 (build 9200)).
+ *  Function call: `makeDataReport(data = y2016, mode = "summarize", file = "codebook_y2016.Rmd", 
+    checks = list(list("showAllFactorLevels")), listChecks = FALSE, 
+    maxProbVals = FALSE, codebook = TRUE, reportTitle = "Codebook for y2016")`
+
+###Tidy Data
+*FinalGirl.csv Codebook summary table*
+---------------------------------
+Variable list                    Result
+--------------------------------
+Number of observations      15267
+Number of variables             2
+---------------------------------
+
+Codebook summary table
+------------------------------------------------------------------
+Label   Variable      Class       # unique  Missing  Description  
+                                    values                        
+------------------------------------------------------------------
+        **[Name]**    factor         15267  0.00 %                
+        **[Total]**   integer         1300  0.00 %                
+------------------------------------------------------------------
+
+-------------------------------------
+Name                        Result
+----------------------------------
+Variable type                 integer
+Number of missing obs.        0 (0 %)
+Number of unique values          1300
+Median                             30
+1st and 3rd quartiles          17; 79
+Min. and max.               10; 39829
+-------------------------------------
+Source
+Report generation information:
+ *  Created by Hayley (username: `hayle`).
+ *  Report creation time: Mon Oct 01 2018 23:04:47
+ *  Report Was run from directory: `C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_3`
+ *  dataMaid v1.1.2 [Pkg: 2018-05-03 from CRAN (R 3.5.1)]
+ *  R version 3.5.1 (2018-07-02).
+ *  Platform: x86_64-w64-mingw32/x64 (64-bit)(Windows >= 8 x64 (build 9200)).
+ *  Function call: `makeDataReport(data = FinalGirl, mode = "summarize", file = "codebook_FinalGirl.Rmd", 
+    checks = list(list("showAllFactorLevels")), listChecks = FALSE, 
+    maxProbVals = FALSE, codebook = TRUE, reportTitle = "Codebook for FinalGirl")`
+
+
+###Transformations
+
+```{r `echo = FALSE`}
+#Load the semicolon delimitied text file
+y2016 <- data.frame(read.delim("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_5/yob2016.txt", header = FALSE, sep = ";", dec = "."))
+#Give the columns names
+names(y2016) <- c("Name","Gender","Count")
+#Remove the duplicate row
+y2016 <- y2016[-212,]
+#Load the comma delimited text file
+y2015 <- data.frame(read.delim("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_5/yob2015.txt", header = FALSE, sep = ",", dec = "."))
+#Give the columns names
+names(y2015) <- c("Name","Gender","Count")
+#Merge
+final <- (merge(y2016, y2015, by = c("Name","Gender")))
+names(final) <- c("Name","Gender","2016_Count", "2015_Count")
+```
+
+
+
