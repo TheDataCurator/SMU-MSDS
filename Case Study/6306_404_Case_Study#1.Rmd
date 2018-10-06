@@ -1,0 +1,84 @@
+---
+title: "6306-404 Case Study #1"
+authors: "Michael Catalano + Hayley Horn"
+date: "October 6, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Packages Used
+library(dplyr)
+library(plyr)
+library(ggplot2)
+```
+
+###Purpose
+Consumer beer preference is a changing and the ability to understand, adapt and forecst the consumer's changing tastes is paramount for future profibility. We have taken data 2410 craft beers and sales data from 558 US breweries, and we have used that information to find a insights to understand components affecting beer consumption. Consumers are not always able to articulate preferences consistent with industry terms, so this approach removes the burdern of industry knowledge from the consumer- they have voted with their pocketbooks.
+
+####Questions- Do not include specifically
+1.	How many breweries are present in each state?
+2.	Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.
+3.	Report the number of NA's in each column.
+4.	Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
+5.	Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+6.	Summary statistics for the ABV variable.
+7.	Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.
+
+###Massive chunk of code- Needs a narrative to tell the story
+
+```{r Data_Load, echo=TRUE}
+#Load the Beer data semicolon delimitied text file
+Beer <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/beers.csv", header = TRUE, sep = ",", dec = "."))
+
+#Load the Brewery data
+Brew <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/breweries.csv", header = TRUE, sep = ",", dec = "."))
+
+#Rename for consistency and easier linking
+names(Beer) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces")
+str(Beer)
+
+#Count Breweries by State - answers #1
+Brew_summary <- data.frame(count(Brew$State))
+names(Brew_summary) <- c("State","Brew_Count")
+
+#Mapping the Breweries, not required but could be informative. Color code by type. Tied to #1 not required
+#This is not working
+map('state', fill = Brew_summary$Brew_Count, col = palette()) #standard map, ugly
+ggplot(data = Brew_summary, mapping = aes()) #ggplot is the nicer option, but I didn't make it so far
+```
+
+###Merging the Files
+
+```{r merge, echo = TRUE}
+#Merge the files  - answers #2
+BandBs <- (merge(Beer,Brew, by = "Brew_ID"))
+head(BandBs,6)
+tail(BandBs,6)
+
+#Count the NAs in each Column - answer #3
+na_BandBs <- sapply(BandBs, function(y) sum(length(which(is.na(y)))))
+na_BandBs
+
+#Compute median ABV and IBU by State  - for #4
+ABV_state <- aggregate(BandBs$ABV, list(BandBs$State), median, na.rm = TRUE)
+names(ABV_state) <- c("State", "ABV_Pct")
+IBU_state <- aggregate(BandBs$IBU, list(BandBs$State), median, na.rm = TRUE)
+names(IBU_state) <- c("State", "IBU_Pct")
+
+#Plot the chart to compare, and these sadly do not work - for #4
+par(mfrow = c(1,2))
+ggplot(data = ABV_state, mapping = aes(x = "State", y = "ABV_Pct" )+ geom_bar(stat = "Identity"))
+ggplot(data = IBU_state, mapping = aes(x = "State", y = "IBU_Pct" ) + geom_bar(stat = "Identity"))
+
+#Which state has more bitter beer - Not Done
+
+#Summary Statistics - Not Done
+
+#Scatterplot of bitterness and alcohol content - Also, not done
+
+```
+
+###Resources
