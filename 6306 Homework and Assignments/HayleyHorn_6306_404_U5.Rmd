@@ -1,0 +1,95 @@
+---
+title: "6306-404 U5 Live Session Assignment"
+author: "Hayley Horn"
+date: "September 30, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#setwd("C:/Users/ha406272/Dropbox/SMU/")
+#setwd("C:/Users/hayle/Dropbox/SMU/")
+```
+Github link to rmd file:https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5.html
+Github link to html file:https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5.html
+Githib link to Codebook: https://github.com/TheDataCurator/SMU-MSDS/blob/master/6306%20Homework%20and%20Assignments/HayleyHorn_6306_404_U5_Codebook.Rmd
+
+
+###1.Data Munging
+
+```{r Data_Munging_1, echo=TRUE}
+#a: Load the semicolon delimitied text file
+y2016 <- data.frame(read.delim("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_5/yob2016.txt", header = FALSE, sep = ";", dec = "."))
+
+#Give the columns names
+names(y2016) <- c("Name","Gender","Count")
+
+#b: Summarize and look at the structure of the file
+summary(y2016)
+str(y2016)
+
+#c: Find the errant row
+display <- grep("yyy",y2016$Name)
+display
+
+#d: Remove the duplicate row
+y2016 <- y2016[-212,]
+```
+
+###2.	Data Merging
+
+```{r Data_Merging_2, echo=TRUE}
+#a: Load the comma delimited text file
+y2015 <- data.frame(read.delim("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_5/yob2015.txt", header = FALSE, sep = ",", dec = "."))
+
+    #Give the columns names
+names(y2015) <- c("Name","Gender","Count")
+
+#b: Display last 10 rows in the data file
+tail(y2015, n = 10)
+```
+
+
+```{r Data_Merging_2c, echo=TRUE}
+#c: load the library and merge the 2 files
+     #####This is not final- need to dedupe the rows#####
+final <- (merge(y2016, y2015, by = c("Name","Gender")))
+names(final) <- c("Name","Gender","2016_Count", "2015_Count")
+
+```
+
+###3.	Data Summary
+
+```{r Data_Summary_3, echo=TRUE}
+#a: Create column named Total with combined totals
+
+final$Total <- c(final$`2016_Count` + final$`2015_Count`)
+
+#b: Sort and select top 10 names
+final <- final[order(-final$Total),]
+head(final, 10)
+
+#c: Top 10 Girl names for the client
+FinalGirl <- subset(final[order(-final$Total),], final$Gender == "F")
+
+#Remove extra columns
+FinalGirl <- FinalGirl[,-4]
+FinalGirl <- FinalGirl[,-3]
+FinalGirl <- FinalGirl[,-2]
+
+#d: Top 10 Girl names to a file
+write.csv(file = "Top10GirlNames.csv", x = FinalGirl,row.names = F, quote = F)
+```
+
+
+###Resources
+
+Input delimiters
+http://www.sthda.com/english/wiki/reading-data-from-txt-csv-files-r-base-functions
+
+Input help
+https://www.statmethods.net/input/contents.html
+
+

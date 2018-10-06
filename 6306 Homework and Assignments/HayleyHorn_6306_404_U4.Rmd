@@ -1,0 +1,95 @@
+---
+title: "6306-404 U4 Live Session Assignment"
+author: "Hayley Horn"
+date: "September 23, 2018"
+output: 
+  html_document: default 
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) 
+```
+
+```{r housekeeping, include=FALSE}
+#setwd("C:/Users/ha406272/Dropbox/SMU/R/")
+#setwd("C:/Users/hayle/Dropbox/SMU/R/")
+library(XML)
+library(dplyr)
+library(tidyr)
+library(stringi)
+library(rvest)
+library(ggplot2)
+library(RCurl)
+library(magrittr)
+
+```
+
+###1. Harry Potter Cast
+
+```{r 1a-b, echo=TRUE}
+#a: Load the website
+movie <- read_html('http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1')
+#b: Pull the cast list into a data frame
+cast_list <- html_node(movie,".cast_list") %>% html_table() %>% as.data.frame()
+```
+
+```{r 1c-d,  echo=TRUE}
+#c: Remove low value rows and columns
+cast_list <- cast_list[-1,]
+cast_list <- cast_list[-92,]
+cast_list <- cast_list[-15,]
+cast_list <- cast_list[,-1]
+cast_list <- cast_list[,-2]
+names(cast_list) <- c("Actor","Character")
+#d: Split and fix names
+cast_list <- separate(cast_list, "Actor", into = c("First_Name","Surname"),"(\\s+)(?!.*\\s+)")
+cast_list$Character[10] <- "Griphook/Professor Filius Flitwick"
+```
+
+```{r 1e, echo=TRUE}
+#e: Ttrim to top 10 rows
+head(cast_list, n = 10)
+```
+
+###2. SportsBall
+
+```{r 2a-b, echo=TRUE}
+#a: Read in the website
+espn <- read_html("http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs")
+#b: Pull the data into a data frame
+espn_table <- html_nodes(espn,"table") %>% .[2] %>% html_table() %>% as.data.frame()
+str(espn_table)
+```
+
+```{r 2c, echo=TRUE}
+#c: Remove low value columns and rows
+names(espn_table) <- espn_table[2,]
+espn_table <- espn_table[-1,]
+espn_table <- espn_table[-1,]
+espn_table <- espn_table[-15,]
+espn_table <- separate(espn_table, "PLAYER", into = c("PLAYER","POSITION"), "(, )")
+```
+
+```{r 2d, echo=TRUE}
+#d: Plot the data
+espn_plot <- data.frame(espn_table$PLAYER,espn_table$POSITION,espn_table$`FG%`, stringsAsFactors = FALSE)
+espn_plot_names <- c("Player","Position","Field Goal Pct")
+names(espn_plot) <- espn_plot_names
+espn_plot <- ggplot(data = espn_plot,aes_string("Player","`Field Goal Pct`", fill = "Position")) + geom_bar(stat = "Identity") + theme(axis.text.x = element_text(angle = 90))
+espn_plot
+```
+
+###Resources
+
+html_table usage
+http://bradleyboehmke.github.io/2015/12/scraping-html-tables.html
+
+Regex
+http://stat545.com/block027_regular-expressions.html
+
+ggplot
+http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization
+
+ggplot2 visualizations
+http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
