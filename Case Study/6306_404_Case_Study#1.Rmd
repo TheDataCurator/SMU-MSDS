@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(plyr)
 library(ggplot2)
+library(data.table)
 ```
 
 ###Purpose
@@ -68,17 +69,51 @@ names(ABV_state) <- c("State", "ABV_Pct")
 IBU_state <- aggregate(BandBs$IBU, list(BandBs$State), median, na.rm = TRUE)
 names(IBU_state) <- c("State", "IBU_Pct")
 
-#Plot the chart to compare, and these sadly do not work - for #4
-par(mfrow = c(1,2))
-ggplot(data = ABV_state, mapping = aes(x = "State", y = "ABV_Pct" )+ geom_bar(stat = "Identity"))
-ggplot(data = IBU_state, mapping = aes(x = "State", y = "IBU_Pct" ) + geom_bar(stat = "Identity"))
+#Plot the chart to compare - for #4
+#Change ABV by State bars into descending order, and graph
+ABV_state$State <- factor(ABV_state$State, levels = ABV_state$State[order(-ABV_state$ABV_Pct)])
+ggplot(data=ABV_state , aes(x=ABV_state$State , y=ABV_state$ABV_Pct, fill=ABV_state$State)) + geom_bar(stat="identity") + labs(title="Beer ABV by State",
+         x="State", y = "ABV" , fill='State') +
+  theme_bw(10) +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  theme(legend.title.align=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+#Change IBU by State bars into descending order, and graph
+IBU_state$State <- factor(IBU_state$State, levels = IBU_state$State[order(-IBU_state$IBUs)])
+ggplot(data=IBU_state , aes(x=IBU_state$State , y=IBU_state$IBUs, fill=IBU_state$State)) + geom_bar(stat="identity") + labs(title="Beer IBUs by State",
+         x="State", y = "IBUs" , fill='State') +
+  theme_bw(10) +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  theme(legend.title.align=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))
 
-#Which state has more bitter beer - Not Done
+#Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer? - for #5
+library("data.table")
+ABV_state_sorted <- setorderv(ABV_state, "ABV_Pct")[]
+tail(ABV_state_sorted,2)
+#There were two states with the highest ABV- DC and KY
+IBU_state_sorted <- setorderv(IBU_state, "IBUs")[]
+tail(IBU_state_sorted,1)
+#The state with the highest IBU is ME
 
-#Summary Statistics - Not Done
+#Summary Statistics - for #6
+summary(ABV_state$ABV_Pct)
 
-#Scatterplot of bitterness and alcohol content - Also, not done
+#Scatterplot of bitterness and alcohol content 
+#Re-combine ABV and IBU tables
+ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))
+#Plot the scatterplot
+  ggplot(ABV_IBU_combined, aes(x=IBUs, y=ABV_Pct)) + 
+  geom_point()+
+  geom_smooth(method=lm) +
+  ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
 
+# Calculate correlation between ABV and IBUs
+# First we remove the N/A IBU value from SD
+ABV_IBU_combined_nona <- ABV_IBU_combined[-42,]
+cor(ABV_IBU_combined_nona$ABV_Pct, ABV_IBU_combined_nona$IBUs)
+#Obvserved a weak correlation between ABV and IBUs using scatter plot and correlation formula (0.282)
 ```
 
 ###Resources
