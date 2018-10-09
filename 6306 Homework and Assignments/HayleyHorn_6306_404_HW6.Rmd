@@ -15,13 +15,16 @@ library(sqldf)
 
 1. Mental Health Clinics
 
-Get the file and stick in a dataframe
+Load the file,and some basic clean-up
 ```{r Mental Health Clinics, ECHO=TRUE }
 #a 
+load("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/N-MHSS-2015-DS0001-data//N-MHSS-2015-DS0001-data-r.rda")
 state <- data.frame(mh2015_puf$LST)
 state2 <- data_frame(mh2015_puf$LST, mh2015_puf$FACILITYTYPE)
 attach(state)
 attach(state2)
+#this throws off messages about masking "The following object is masked from state ..." that I don't know how to suppress
+
 
 #clean data up enough to match
 names(state) = "stateCode"
@@ -33,8 +36,6 @@ names(state2) = c("stateCode","Type")
 #state <- sqldf("SELECT state.*, state2.* FROM state INNER JOIN state2 USING(stateCode)")
 #str(state)
 
-#this throws off messages about masking that I don't know how to suppress
-
 ```
 
 Grab a distinct list of States
@@ -43,18 +44,20 @@ Grab a distinct list of States
 data.frame(state) %>% distinct()
 ```
 
-Clean that wonky file
+Clean the file and remove off mainland states
 ```{r clean, ECHO = TRUE}
+#this is repeated but the code will not work otherwise
+state <- data.frame(state) #If I take this out, it will not work AGAIN
+names(state) <- "stateCode"
+attach(state)
+#str(stateCode)
+
 #c
 rmstate <- data.frame(c("AK","HI","AS","GU","BR","VI"))
 names(rmstate)  <- "stateCode"
-head(paste(stateCode),20) #Verify no leading or tailing spaces
-state <- data.frame(state)[!(stateCode %in% rmstate$stateCode),]
-state <- data.frame(state) #If I take this out, it will not work
-names(state) <- "stateCode"
-#str(stateCode)
+#head(paste(stateCode),20) #Verify no leading or tailing spaces
 
-#group by state code
+#group by state code- simplifies my plot
 pstate <- data.frame(sqldf("SELECT stateCode,COUNT(stateCode) as Count FROM state group by stateCode "))
 #str(pstate)
 
@@ -70,11 +73,12 @@ Read in the size file
 ssize <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/statesize.csv"))
 names(ssize) <- c("StateName","SqMiles","stateCode","Region")
 attach(ssize)
-#state <- data.frame(mh2015_puf$LST) I may not need this, it is working now
+#If I don't add this part, 
+state <- data.frame(state) #Is this is the 5th time I have loaded this? 
 #str(pstate)
-#names(state) <- "stateCode" #standardize name
+names(state) <- c("stateCode") #standardize name
 #state$stateCode <- gsub(" ","",state$stateCode)
-#attach(state)
+attach(state)
 ```
 
 Make sure data is ready to merge and merge
@@ -105,11 +109,13 @@ p2state <- data.frame(df3, df3$SqMiles/1000)
 names(p2state) <- c("stateCode","SqMiles","stateCode2","Count","Region","per1000SqMiles")
 #str(p2state)
 
+#Plot it all together
 ggplot(p2state, aes(x = reorder(stateCode, - per1000SqMiles), y =(per1000SqMiles),  fill = Region)) + geom_bar(stat = "identity", width = .75) + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("VA Hospitals in the Continental US") + xlab("State") + ylab("# of Hospitals") + theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1))
 #color buckets should be not the default, but I couldn't make that work. I think it is using facets.
 
-
 ```
 
-	
 
+Summary
+I am not good at r coding and it looks like my dog did this. He didn't.
+Hadley Wickham would be very disappointed in this document.
