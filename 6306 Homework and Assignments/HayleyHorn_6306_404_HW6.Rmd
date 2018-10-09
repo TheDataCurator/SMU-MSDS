@@ -1,0 +1,115 @@
+---
+title: "6306-404 HW6 "
+author: "Hayley Horn"
+date: "October 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(plyr)
+library(sqldf)
+```
+
+1. Mental Health Clinics
+
+Get the file and stick in a dataframe
+```{r Mental Health Clinics, ECHO=TRUE }
+#a 
+state <- data.frame(mh2015_puf$LST)
+state2 <- data_frame(mh2015_puf$LST, mh2015_puf$FACILITYTYPE)
+attach(state)
+attach(state2)
+
+#clean data up enough to match
+names(state) = "stateCode"
+state$stateCode <- gsub(" ","",state$stateCode) #remove spaces
+state$stateCode <- as.factor(state$stateCode)
+names(state2) = c("stateCode","Type")
+
+#join state with facilities list - I could not get this to work, wanted to join here and filter out VAMC
+#state <- sqldf("SELECT state.*, state2.* FROM state INNER JOIN state2 USING(stateCode)")
+#str(state)
+
+#this throws off messages about masking that I don't know how to suppress
+
+```
+
+Grab a distinct list of States
+```{r distinct, ECHO=TRUE}
+#b 
+data.frame(state) %>% distinct()
+```
+
+Clean that wonky file
+```{r clean, ECHO = TRUE}
+#c
+rmstate <- data.frame(c("AK","HI","AS","GU","BR","VI"))
+names(rmstate)  <- "stateCode"
+head(paste(stateCode),20) #Verify no leading or tailing spaces
+state <- data.frame(state)[!(stateCode %in% rmstate$stateCode),]
+state <- data.frame(state) #If I take this out, it will not work
+names(state) <- "stateCode"
+#str(stateCode)
+
+#group by state code
+pstate <- data.frame(sqldf("SELECT stateCode,COUNT(stateCode) as Count FROM state group by stateCode "))
+#str(pstate)
+
+#d Plot the amount by states
+ggplot(pstate, aes(x = reorder(stateCode, -Count), y = (Count), fill = Count)) + geom_bar(stat = "identity", width = .75) + guides(fill = FALSE) + theme(legend.position = "none") + theme(plot.title = element_text(hjust = 0.5))+ ggtitle("VA Hospitals in the Continental US") + xlab("State") + ylab("# of Hospitals") + theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust=1))
+```
+
+2. Cleaning and Bringing in New Features (60%) 
+ 
+Read in the size file
+```{r ssize, ECHO = TRUE}
+#a read in size file
+ssize <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/statesize.csv"))
+names(ssize) <- c("StateName","SqMiles","stateCode","Region")
+attach(ssize)
+#state <- data.frame(mh2015_puf$LST) I may not need this, it is working now
+#str(pstate)
+#names(state) <- "stateCode" #standardize name
+#state$stateCode <- gsub(" ","",state$stateCode)
+#attach(state)
+```
+
+Make sure data is ready to merge and merge
+```{r data prep, ECHO = TRUE}
+#2a + 2b issue with leading and trailing spaces was identified on import and fixed in section one. I would like to develop a regex to run and look for standard dq issues, like leading trailing spaces, unprintable chars, nas and obscenities. The last option is standard for when I check data sources that either come from or get published to the web, and also if customer service employees have entered the data.
+```
+
+
+Add in Region information and plot
+```{r plot, ECHO = TRUE}
+
+#c join files
+
+#d region and plot
+
+reg <- read.csv("https://raw.githubusercontent.com/cphalpert/census-regions/master/us%20census%20bureau%20regions%20and%20divisions.csv")
+
+names(reg) <- c("State","stateCode","Region","Division")
+
+pstate <- sqldf("SELECT pstate.*, Region FROM pstate INNER JOIN reg USING(stateCode)")
+
+df3 <- sqldf("SELECT distinct stateCode, SqMiles, pstate.*
+              FROM ssize
+             INNER JOIN pstate USING(stateCode)")
+#str(df3)
+
+p2state <- data.frame(df3, df3$SqMiles/1000)
+names(p2state) <- c("stateCode","SqMiles","stateCode2","Count","Region","per1000SqMiles")
+#str(p2state)
+
+ggplot(p2state, aes(x = reorder(stateCode, - per1000SqMiles), y =(per1000SqMiles),  fill = Region)) + geom_bar(stat = "identity", width = .75) + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("VA Hospitals in the Continental US") + xlab("State") + ylab("# of Hospitals") + theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1))
+#color buckets should be not the default, but I couldn't make that work. I think it is using facets.
+
+
+```
+
+	
+
