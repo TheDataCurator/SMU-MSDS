@@ -8,29 +8,16 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 #Packages Used
 library(dplyr)
 library(plyr)
 library(ggplot2)
 library(data.table)
 ```
+Beer preferences in the United States are ever changing, two factor that are commonly adjusted are alcohol content and bitterness. For this analysis, we have taken data 2410 craft beers and sales data from 558 US breweries to identify trends or regionality for preference.
 
-###Purpose
-Consumer beer preference is a changing and the ability to understand, adapt and forecst the consumer's changing tastes is paramount for future profibility. We have taken data 2410 craft beers and sales data from 558 US breweries, and we have used that information to find a insights to understand components affecting beer consumption. Consumers are not always able to articulate preferences consistent with industry terms, so this approach removes the burdern of industry knowledge from the consumer- they have voted with their pocketbooks.
-
-####Questions- Do not include specifically
-1.	How many breweries are present in each state?
-2.	Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.
-3.	Report the number of NA's in each column.
-4.	Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
-5.	Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
-6.	Summary statistics for the ABV variable.
-7.	Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.
-
-###Massive chunk of code- Needs a narrative to tell the story
-
-```{r Data_Load, echo=TRUE}
+```{r Data_Load, echo=FALSE}
 #Load the Beer data semicolon delimitied text file
 Beer <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/beers.csv", header = TRUE, sep = ",", dec = "."))
 
@@ -40,7 +27,10 @@ Brew <- data.frame(read.csv("C:/Users/hayle/Dropbox/SMU/MSDS 6306/Unit_6/breweri
 #Rename for consistency and easier linking
 names(Beer) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces")
 str(Beer)
-
+#Should we dress up the output?
+```
+Colorado leads the country in breweries, followed by California, Michigan, Oregan and Texas.
+```{r Data_Load, echo=FALSE}
 #Count Breweries by State - answers #1
 Brew_summary <- data.frame(count(Brew$State))
 names(Brew_summary) <- c("State","Brew_Count")
@@ -51,9 +41,8 @@ map('state', fill = Brew_summary$Brew_Count, col = palette()) #standard map, ugl
 ggplot(data = Brew_summary, mapping = aes()) #ggplot is the nicer option, but I didn't make it so far
 ```
 
-###Merging the Files
-
-```{r merge, echo = TRUE}
+Bitterness is measured in International Business Units (IBU), and Alcohol content is measured in Let's look at the median for both measures by state
+```{r merge, echo = False}
 #Merge the files  - answers #2
 BandBs <- (merge(Beer,Brew, by = "Brew_ID"))
 head(BandBs,6)
@@ -78,7 +67,10 @@ ggplot(data=ABV_state , aes(x=ABV_state$State , y=ABV_state$ABV_Pct, fill=ABV_st
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   theme(legend.title.align=0.5) +
   theme(plot.title = element_text(hjust = 0.5))
+  ```
   
+  So which state likes their beer bitter?
+  ```{r Data_Load, echo=FALSE}
 #Change IBU by State bars into descending order, and graph
 IBU_state$State <- factor(IBU_state$State, levels = IBU_state$State[order(-IBU_state$IBUs)])
 ggplot(data=IBU_state , aes(x=IBU_state$State , y=IBU_state$IBUs, fill=IBU_state$State)) + geom_bar(stat="identity") + labs(title="Beer IBUs by State",
@@ -87,7 +79,10 @@ ggplot(data=IBU_state , aes(x=IBU_state$State , y=IBU_state$IBUs, fill=IBU_state
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   theme(legend.title.align=0.5) +
   theme(plot.title = element_text(hjust = 0.5))
+```
 
+And Mainers like their beer with a higher alcohol content.
+```{r Max ABV, echo=FALSE}
 #Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer? - for #5
 library("data.table")
 ABV_state_sorted <- setorderv(ABV_state, "ABV_Pct")[]
@@ -96,10 +91,14 @@ tail(ABV_state_sorted,2)
 IBU_state_sorted <- setorderv(IBU_state, "IBUs")[]
 tail(IBU_state_sorted,1)
 #The state with the highest IBU is ME
-
+```
+Something about summary data here
+```{r Summary Statistics, echo=FALSE}
 #Summary Statistics - for #6
 summary(ABV_state$ABV_Pct)
-
+```
+Need to run scatterplot and comment on findings
+```{r Scatterplot, echo=FALSE}
 #Scatterplot of bitterness and alcohol content 
 #Re-combine ABV and IBU tables
 ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))
@@ -108,12 +107,11 @@ ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))
   geom_point()+
   geom_smooth(method=lm) +
   ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
-
+```
+The study showed a weak correlation between ABV and IBUs using scatter plot and correlation formula (0.282)
+```{r correlation, echo=FALSE}
 # Calculate correlation between ABV and IBUs
 # First we remove the N/A IBU value from SD
 ABV_IBU_combined_nona <- ABV_IBU_combined[-42,]
 cor(ABV_IBU_combined_nona$ABV_Pct, ABV_IBU_combined_nona$IBUs)
-#Obvserved a weak correlation between ABV and IBUs using scatter plot and correlation formula (0.282)
 ```
-
-###Resources
