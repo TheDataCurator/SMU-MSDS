@@ -1,5 +1,6 @@
 ---
-title: "Craft Beer Alcohol Content and Bitterness Preference Analysis"
+title: "Craft Beer"
+subtitle: <span style="color:blue">Alcohol Content and Bitterness Preference Analysis</span>
 authors: "Michael Catalano + Hayley Horn"
 date: "October 16, 2018"
 output:
@@ -13,13 +14,15 @@ knitr::opts_chunk$set(echo = FALSE)
 #6306-404 Case Study #1
 #Packages Used
 library(plyr)
+library(blogdown)
 library(ggplot2)
 library(data.table)
 library(DT)
+
 ```
 
 <br><br>
-There are many ingredients and brewing techniques that are used to create a craft beer, this analysis focuses on 2 measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurment we will consider is International Business Units (IBU) whichis measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. By law in the United States, the ABV must be listed on each beer to give customers an idea about how much alcohol is in each brew. 
+Beer can be made using a range of ingredient to adjust the color, type and flavor profile. This analysis focuses on 2 measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurment we will consider is International Business Units (IBU) whichis measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. By law in the United States, the ABV must be listed on each beer to give customers an idea about how much alcohol is in each brew. 
 
 For this analysis, we have taken data 2410 craft beers and sales data from 558 US breweries to identify trends or regionality for preference. We use craft brewery data versus national brands as there is more product experimentation and product churn.
 <br>
@@ -33,9 +36,9 @@ Brew <- data.frame(read.csv("https://raw.githubusercontent.com/TheDataCurator/SM
 names(Beer) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces")#Rename for consistency and easier linking
 ```
 
-<br>
+<br><span style="color:blue">
 <b>There is a great amount of variablility in number of breweries by state. Colorado leads the country in breweries, followed by California, Michigan, Oregan and Texas.</b>
-<br>
+<br></span>
 ```{r Brewery_Count, echo=FALSE}
 #How many breweries are in each state
 
@@ -48,9 +51,9 @@ names(Brew_summary) <- c("State","Brew_Count") # Create more user friendly label
 #1. How many breweries are present in each state
 datatable(Brew_summary, rownames = FALSE, filter = "top", options = list(pageLength = 5, scrollX = T),class = 'cell-border stripe',caption = 'Table 1: Count of Craft Breweries by State.', width = 500 ) #Creates table for easy filtering and view of breweries by STate
 ```
-<br>
+<br><span style="color:blue">
 <b>Data from Breweries and measurements including Beer Name, ABV, IBU and other attributes were pulled in to for some flexibility in analysis.</b>
-<br>
+<br></span>
 ```{r merge, echo = FALSE}
 #2. Merge beer data with the breweries data. Print the first six observations and last six observations to check the merged file.
 BandBs <- (merge(Beer,Brew, by = "Brew_ID")) #Merges the data sets 
@@ -60,16 +63,16 @@ head(BandBs,6)
 tail(BandBs,6)
 ```
 
-<br>
-<b>There were incomplete data in the data sets as noted below. The field that was most commonly incomplete was IBU.</b>
+<br><span style="color:blue">
+<b>There were incomplete data in the data sets as noted below. The field that was most commonly incomplete was IBU.</b></span>
 <br>
 ```{r incompletes, echo = FALSE}
 #3. Report the number of NAs in each column
 na_BandBs <- sapply(BandBs, function(y) sum(length(which(is.na(y)))))
 na_BandBs 
 ```
-<br>
-<b>For perspective, we looked at the median alchol content and bitterness unit for each state.</b>
+<br><span style="color:blue">
+<b>For perspective, we looked at the median alchol content and bitterness unit for each state.</b></span>
 <br>
 ```{r ABV_IBU_y_State, echo = FALSE}
 #Compute median ABV and IBU by State  - for #4
@@ -98,9 +101,9 @@ ggplot(data = IBU_state , aes(x = IBU_state$State , y = IBU_state$IBUs, fill = I
   theme(axis.text.x = element_text(angle = 90,hjust = 1)) +
   theme(legend.title.align = 0.5) + theme(plot.title = element_text(hjust = 0.5)) #IBU by State bars into descending order, and graph
 ```
-<br>
+<br><span style="color:blue">
 <b>Here is a closer look at the details for the highest values for ABV and IBU.</b>
-<br>
+<br></span>
 
 ```{r Max ABV, echo=FALSE}
 #5. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
@@ -112,15 +115,15 @@ IBU_state_sorted <- setorderv(IBU_state, "IBUs")[]
 tail(IBU_state_sorted,1)
 #The state with the highest IBU is ME
 ```
-<br><b>
-We wanted to share the range of the alcohol content and bitterness </b><br>
+<br><b><span style="color:blue">
+We wanted to share the range of the alcohol content and bitterness </b><br></spN>
 ```{r Summary Statistics, echo=FALSE}
 #6. Summary Statistics for ABV
 summary(ABV_state$ABV_Pct)
 ```
 
-<br><b> We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable."
-</b><br>
+<br><b> <span style="color:blue">We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable."
+</b><br></span>
 ```{r Scatterplot, echo=FALSE}
 #7. Is there a relationshop between bitterness of beer and its alcohol content. Use a scatterplot to visualize the data.
 
@@ -132,14 +135,16 @@ ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))#Re-combine ABV an
   geom_smooth(method=lm) +
   ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
 ```
-<br><b>
-The study showed a weak positive correlation (0.282) between ABV and IBUs using scatter plot and Pearson's Product correlation formula.</b><br>
+<br><b><span style="color:blue">
+The study showed a weak positive correlation (0.282) between ABV and IBUs using scatter plot and Pearson's Product correlation formula.</b></span><br>
 ```{r correlation, echo=FALSE}
 # Calculate correlation between ABV and IBUs
 # First we remove the N/A IBU value from SD
 ABV_IBU_combined_nona <- ABV_IBU_combined[-42,]
 cor(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)
 ```
-<br>In summary, their was not evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the the District of Columbia and the state of Kentucky.
+<br><span style="color:blue"><b>In Summary</b></span>
+
+There was not evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the the District of Columbia and the state of Kentucky.
 
 For further analysis, we recommend applying demographic information to the analysis to determine if different generational segments have preferences, and regionality of preference with the target generational segments.  
