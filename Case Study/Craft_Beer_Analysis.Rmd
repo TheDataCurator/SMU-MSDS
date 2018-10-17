@@ -77,7 +77,6 @@ na_BandBs
 <br>
 ```{r ABV_IBU_y_State, echo = FALSE}
 #Compute median ABV and IBU by State  - for #4
-#Compute median ABV and IBU by State  - for #4
 ABV_state <- aggregate(BandBs$ABV, list(BandBs$State), median, na.rm = TRUE)
 names(ABV_state) <- c("State", "ABV_Pct")
 
