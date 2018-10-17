@@ -18,13 +18,14 @@ library(blogdown)
 library(ggplot2)
 library(data.table)
 library(DT)
+library(RColorBrewer)
 
 ```
 
 <br><br>
-Beer can be made using a range of ingredient to adjust the color, type and flavor profile. This analysis focuses on 2 measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurment we will consider is International Business Units (IBU) whichis measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. By law in the United States, the ABV must be listed on each beer to give customers an idea about how much alcohol is in each brew. 
+Beer can be made using a range of ingredients to adjust the color, type and flavor profile. This analysis focuses on two measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurment we will consider is International Business Units (IBU) which is measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. By law in the United States, the ABV must be listed on each beer to give customers an idea about how much alcohol is in each brew. 
 
-For this analysis, we have taken data 2410 craft beers and sales data from 558 US breweries to identify trends or regionality for preference. We use craft brewery data versus national brands as there is more product experimentation and product churn.
+For this analysis, we have taken data from 2,410 craft beers and sales data from 558 US breweries to identify trends or regionality for preference. We use craft brewery data versus national brands as there is more product experimentation and product churn.
 <br>
 
 ```{r Data_Load, echo=FALSE}
@@ -86,20 +87,25 @@ names(IBU_state) <- c("State", "IBUs")
 IBU_state <- IBU_state[-42,]
 
 #Plot the chart to compare - for #4
-
+getPalette = colorRampPalette(brewer.pal(9, "PuBu"))
 
 par(mfrow=c(2,1))
-
+colourCountABV = length(unique(ABV_state$State))
 ABV_state$State <- factor(ABV_state$State, levels = ABV_state$State[order(-ABV_state$ABV_Pct)])
 ggplot(data = ABV_state , aes(x = ABV_state$State , y = ABV_state$ABV_Pct, fill = ABV_state$State)) + geom_bar(stat = 'identity', show.legend = FALSE) + labs(title = "Beer ABV by State", x = 'State', y = 'ABV' , fill = 'State') + theme_bw(10) +
   theme(axis.text.x = element_text(angle = 90,hjust = 1)) +
-  theme(legend.title.align = 0.5) + theme(plot.title = element_text(hjust = 0.5))#ABV by State bars into descending order, and graph
+  theme(legend.title.align = 0.5) + theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values = rev(getPalette(colourCountABV)))
+  #ABV by State bars into descending order, and graph
 
+colourCountIBU = length(unique(IBU_state$State))
 IBU_state$State <- factor(IBU_state$State, levels = IBU_state$State[order(-IBU_state$IBUs)])
 
 ggplot(data = IBU_state , aes(x = IBU_state$State , y = IBU_state$IBUs, fill = IBU_state$State)) + geom_bar(stat = "identity", show.legend = FALSE) + labs(title = "Beer IBUs by State", x = "State", y = "IBUs" , fill = 'State') + theme_bw(10) +
   theme(axis.text.x = element_text(angle = 90,hjust = 1)) +
-  theme(legend.title.align = 0.5) + theme(plot.title = element_text(hjust = 0.5)) #IBU by State bars into descending order, and graph
+  theme(legend.title.align = 0.5) + theme(plot.title = element_text(hjust = 0.5))+
+  scale_fill_manual(values = rev(getPalette(colourCountIBU)))
+  #IBU by State bars into descending order, and graph
 ```
 <br><span style="color:blue">
 <b>Here is a closer look at the details for the highest values for ABV and IBU.</b>
@@ -122,7 +128,7 @@ We wanted to share the range of the alcohol content and bitterness </b><br></spN
 summary(ABV_state$ABV_Pct)
 ```
 
-<br><b> <span style="color:blue">We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable."
+<br><b> <span style="color:blue">We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable.
 </b><br></span>
 ```{r Scatterplot, echo=FALSE}
 #7. Is there a relationshop between bitterness of beer and its alcohol content. Use a scatterplot to visualize the data.
@@ -136,15 +142,13 @@ ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))#Re-combine ABV an
   ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
 ```
 <br><b><span style="color:blue">
-The study showed a weak positive correlation (0.282) between ABV and IBUs using scatter plot and Pearson's Product correlation formula.</b></span><br>
+The study showed very little correlation (r = 0.282, p-value = 0.0471) between ABV and IBUs using scatter plot and Pearson's Product correlation formula. Only 8% of the variance of IBUs can be explained by ABV.</b></span><br>
 ```{r correlation, echo=FALSE}
 # Calculate correlation between ABV and IBUs
-# First we remove the N/A IBU value from SD
-ABV_IBU_combined_nona <- ABV_IBU_combined[-42,]
-cor(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)
+cor.test(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)
 ```
 <br><span style="color:blue"><b>In Summary</b></span>
 
-There was not evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the the District of Columbia and the state of Kentucky.
+There was very little evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the the District of Columbia and the state of Kentucky.
 
 For further analysis, we recommend applying demographic information to the analysis to determine if different generational segments have preferences, and regionality of preference with the target generational segments.  
