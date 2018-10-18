@@ -63,10 +63,11 @@ BandBs <- BandBs[,-1]
 head(BandBs,6)
 tail(BandBs,6)
 ```
-
 <br><span style="color:blue">
-<b>There were incomplete data in the data sets as noted below. The field that was most commonly incomplete was IBU.</b></span>
+<b>There were incomplete data in the data sets as noted below.</b></span><br>
+The field that was most commonly incomplete was IBU, which unlike ABVs are not required by law to be shared with a consumer.
 <br>
+
 ```{r incompletes, echo = FALSE}
 #3. Report the number of NAs in each column
 na_BandBs <- sapply(BandBs, function(y) sum(length(which(is.na(y)))))
