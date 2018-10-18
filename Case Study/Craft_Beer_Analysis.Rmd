@@ -38,8 +38,9 @@ names(Beer) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces")#Ren
 ```
 
 <br><span style="color:blue">
-<b>There is a great amount of variablility in number of breweries by state. Colorado leads the country in breweries, followed by California, Michigan, Oregan and Texas.</b>
-<br></span>
+<b>There is a great amount of variablility in number of breweries by state.</b><br></span>
+Colorado leads the country in breweries, followed by California, Michigan, Oregan and Texas.
+
 ```{r Brewery_Count, echo=FALSE}
 #How many breweries are in each state
 
