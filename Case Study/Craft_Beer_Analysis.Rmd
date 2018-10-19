@@ -123,10 +123,15 @@ tail(IBU_state_sorted,1)
 #The state with the highest IBU is ME
 ```
 <br><b><span style="color:blue">
-We wanted to share the range of the alcohol content and bitterness </b><br></spN>
+We wanted to share the range of the alcohol content and bitterness </b><br></span><br>
+You can see from the boxplat that there are outliers- which can affect the analysis, but they are valid data points.
 ```{r Summary Statistics, echo=FALSE}
 #6. Summary Statistics for ABV
 summary(ABV_state$ABV_Pct)
+boxplot(ABV_state$ABV_Pct, horizontal = TRUE, col = "light blue")
+
+summary(IBU_state$IBUs)
+boxplot(IBU_state$IBUs, horizontal = TRUE, col = "bisque")
 ```
 
 <br><b> <span style="color:blue">We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable.
@@ -143,7 +148,8 @@ ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))#Re-combine ABV an
   ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
 ```
 <br><b><span style="color:blue">
-The study showed very little correlation (r = 0.282, p-value = 0.0471) between ABV and IBUs using scatter plot and Pearson's Product correlation formula. Only 8% of the variance of IBUs can be explained by ABV.</b></span><br>
+Approximately 44% of the variance of IBUs can be explained by ABV.</b></span><br><br>
+The study showed very little correlation (r = 0.282, p-value = 0.0471) between ABV and IBUs using scatter plot and Pearson's Product correlation formula. 
 ```{r correlation, echo=FALSE}
 # Calculate correlation between ABV and IBUs
 cor.test(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)
