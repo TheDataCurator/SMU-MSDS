@@ -6,13 +6,13 @@ Date: "October 20, 2018"
 Due: Thursday, October 18th 2018 One hour before live session. 
 
 Purpose
-    This analysis focuses craft beer data, analysing the data on two measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurement we will consider is International Bitterness Units (IBU) which is measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. 
+    This analysis focuses craft beer data, analysing the data on two measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurement we will consider is International Bitterness Units (IBU) which is measured on a scale of 0 to 100 and describes the bitterness from hops in a beer.Â 
 
 Role in Readme creation
      Hayley typed with Michael's input
 
 Inputs
-    The Beers dataset contains a list of 2410 US craft beers and Breweries dataset contains 558 US breweries. The datasets descriptions are as follows.
+    The Beers dataset contains a list of 2,410 US craft beers and Breweries dataset contains 558 US breweries. The datasets descriptions are as follows.
 
     Beers.csv
      Name: Name of the beer.
