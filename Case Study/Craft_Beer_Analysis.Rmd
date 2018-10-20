@@ -12,14 +12,17 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 #Prepared by Michael Catalano + Hayley HOrn
 #6306-404 Case Study #1
-#Packages Used
-library(plyr)
+```
+
+```{r Libraries = FALSE}
+#These are the packages used in this project
 library(blogdown)
-library(ggplot2)
 library(data.table)
 library(DT)
+library(ggplot2)
+library(kableExtra)
+library(plyr)
 library(RColorBrewer)
-
 ```
 
 <br><br>
@@ -29,6 +32,7 @@ For this analysis, we have taken data from 2,410 craft beers and sales data from
 <br>
 
 ```{r Data_Load, echo=FALSE}
+#This section pulls the source data files
 
 Beer <- data.frame(read.csv("https://raw.githubusercontent.com/TheDataCurator/SMU-MSDS/master/Case%20Study/Beers.csv", header = TRUE, sep = ",", dec = ".")) #Load the Beer data semicolon delimitied text file
 
@@ -48,44 +52,52 @@ Brew$State = trimws(Brew$State, "l") #Remove Whitespace
 
 Brew_summary <- data.frame(count(Brew$State)) #Create dataframe
 
-names(Brew_summary) <- c("State","Brew_Count") # Create more user friendly labels
+names(Brew_summary) <- c("State","Brew_Count") #Create more user friendly labels
 
 #1. How many breweries are present in each state
-datatable(Brew_summary, rownames = FALSE, filter = "top", options = list(pageLength = 5, scrollX = T),class = 'cell-border stripe',caption = 'Table 1: Count of Craft Breweries by State.', width = 500 ) #Creates table for easy filtering and view of breweries by STate
+datatable(Brew_summary, rownames = FALSE, filter = "top", options = list(pageLength = 5, scrollX = T),class = 'cell-border stripe',caption = 'Count of Craft Breweries by State.', width = 500 ) #Creates table for easy filtering and view of breweries by State
 ```
 <br><span style="color:blue">
-<b>Data from Breweries and measurements including Beer Name, ABV, IBU and other attributes were pulled in to for some flexibility in analysis.</b>
-<br></span>
+<b>First we take a look at the first and last 6 records of the beer and brewery data</b></span>
+We merged the data from both files for a consolidated view of brewery information, beer information, including the ingredients of interest ABV and IBU and other attributes were pulled in to for some flexibility in analysis. The top of the file looks fairly complete and clean.
+
+The end of the file indicates there are IBU values missing, so next we look to see the extent to which the field is incomplete.
+<br>
 ```{r merge, echo = FALSE}
 #2. Merge beer data with the breweries data. Print the first six observations and last six observations to check the merged file.
+
 BandBs <- (merge(Beer,Brew, by = "Brew_ID")) #Merges the data sets 
-#Show first and last 6 Rows
-BandBs <- BandBs[,-1]
-head(BandBs,6)
-tail(BandBs,6)
+
+kable(head(BandBs,6), longtable = TRUE, booktabs=TRUE, caption="The first 6 records in the Beer and Brewery file") %>% kable_styling(full_width = FALSE) # Print the first 6 lines of the Beer merged beer & brewery data
+
+kable(tail(BandBs,6), longtable = TRUE, booktabs = TRUE,caption="The last 6 records in the Beer and Brewery file") %>% kable_styling(full_width = FALSE)# Print the last 6 lines of the merged beer & brewery data
 ```
 <br><span style="color:blue">
-<b>There were incomplete data in the data sets as noted below.</b></span><br>
-The field that was most commonly incomplete was IBU, which unlike ABVs are not required by law to be shared with a consumer.
+<b>Investigate extent of incomplete data in the data sets.</b></span><br>
+After looking at the head and tail, we looked to see how many fields were incomplete. The field that was most commonly incomplete was IBU, which was expected, and some ABVs which was not expected as they are required by law to be shared with a consumer. We do however still have enough information to continue with the analysis.
 <br>
 
 ```{r incompletes, echo = FALSE}
 #3. Report the number of NAs in each column
-na_BandBs <- sapply(BandBs, function(y) sum(length(which(is.na(y)))))
-na_BandBs 
+na_BandBs <- sapply(BandBs, function(y) sum(length(which(is.na(y))))) #counts the NAs
+
+#There are 2 fields with NAs, 1005 IBUs, 62 ABV
+kable(na_BandBs, longtable = TRUE, booktabs = TRUE,caption="Count of NAs by field in the Beer and Brewery file",escape = TRUE) %>% kable_styling("striped", position = "center")
 ```
 <br><span style="color:blue">
-<b>For perspective, we looked at the median alchol content and bitterness unit for each state.</b></span>
-<br>
-```{r ABV_IBU_y_State, echo = FALSE}
-#Compute median ABV and IBU by State  - for #4
-ABV_state <- aggregate(BandBs$ABV, list(BandBs$State), median, na.rm = TRUE)
-names(ABV_state) <- c("State", "ABV_Pct")
+<b>For perspective, we looked at the median alcohol content and bitterness unit for each state.</b></span><br>
+There was more variability in IBU by State, versus the ABV which you can see groups of states with a similar ABV%.<br>
 
-IBU_state <- aggregate(BandBs$IBU, list(BandBs$State), median, na.rm = TRUE)
-names(IBU_state) <- c("State", "IBUs")
-#Remove NA record
-IBU_state <- IBU_state[-42,]
+```{r ABV_IBU_y_State, echo = FALSE}
+#Compute median ABV and IBU by State
+
+ABV_state <- aggregate(BandBs$ABV, list(BandBs$State), median, na.rm = TRUE) #aggregates the ABV data
+names(ABV_state) <- c("State", "ABV_Pct") #rename the fields
+
+IBU_state <- aggregate(BandBs$IBU, list(BandBs$State), median, na.rm = TRUE) #aggregates the IBU data
+names(IBU_state) <- c("State", "IBUs") #renames the fields
+
+IBU_state <- IBU_state[-42,] #Remove NA record
 
 #Plot the chart to compare - for #4
 getPalette = colorRampPalette(brewer.pal(9, "PuBu"))
@@ -108,10 +120,9 @@ ggplot(data = IBU_state , aes(x = IBU_state$State , y = IBU_state$IBUs, fill = I
   scale_fill_manual(values = rev(getPalette(colourCountIBU)))
   #IBU by State bars into descending order, and graph
 ```
-<br><span style="color:blue">
-<b>Here is a closer look at the details for the highest values for ABV and IBU.</b>
+<br><span style="color:blue"><b>Here is a closer look at the details for the highest values for ABV and IBU.</b>
 <br></span>
-
+There is a tie in ABV, which is in line with what we saw in the chart above, where multiple states shared the same ABV value.<br>
 ```{r Max ABV, echo=FALSE}
 #5. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
 library("data.table")
@@ -123,8 +134,8 @@ tail(IBU_state_sorted,1)
 #The state with the highest IBU is ME
 ```
 <br><b><span style="color:blue">
-We wanted to share the range of the alcohol content and bitterness </b><br></span><br>
-You can see from the boxplat that there are outliers- which can affect the analysis, but they are valid data points.
+We wanted to share the range of the alcohol content and bitterness </b><br></span>
+You can see from the boxplot that there are outliers- which can affect the analysis, but they are valid data points.
 ```{r Summary Statistics, echo=FALSE}
 #6. Summary Statistics for ABV
 summary(ABV_state$ABV_Pct)
@@ -134,8 +145,9 @@ summary(IBU_state$IBUs)
 boxplot(IBU_state$IBUs, horizontal = TRUE, col = "bisque")
 ```
 
-<br><b> <span style="color:blue">We plotted bitterness and alcohol content to see if there was a relationship between the values, but the results were unremarkable.
-</b><br></span>
+<br><b> <span style="color:blue">We plotted bitterness and alcohol content </b><br></span>
+The scatterplot was created to see if there was a relationship between the IBU and ABV at the state level, but the results were unremarkable.
+
 ```{r Scatterplot, echo=FALSE}
 #7. Is there a relationshop between bitterness of beer and its alcohol content. Use a scatterplot to visualize the data.
 
@@ -147,8 +159,7 @@ ABV_IBU_combined <- (merge(ABV_state,IBU_state, by = "State"))#Re-combine ABV an
   geom_smooth(method=lm) +
   ylab("ABV") + labs(title="ABV and IBU Scatter Plot") + theme(plot.title = element_text(hjust = 0.5))
 ```
-<br><b><span style="color:blue">
-Approximately 44% of the variance of IBUs can be explained by ABV.</b></span><br><br>
+<br><b><span style="color:blue">Approximately 44% of the variance of IBUs can be explained by ABV.</b></span><br>
 The study showed very little correlation (r = 0.282, p-value = 0.0471) between ABV and IBUs using scatter plot and Pearson's Product correlation formula. 
 ```{r correlation, echo=FALSE}
 # Calculate correlation between ABV and IBUs
@@ -156,6 +167,6 @@ cor.test(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)
 ```
 <br><span style="color:blue"><b>In Summary</b></span>
 
-There was very little evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the the District of Columbia and the state of Kentucky.
+There was very little evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the District of Columbia and the state of Kentucky.
 
 For further analysis, we recommend applying demographic information to the analysis to determine if different generational segments have preferences, and regionality of preference with the target generational segments.  
