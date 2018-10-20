@@ -1,17 +1,18 @@
-Readme
+#### Title: "Craft Beer:Alcohol Content and Bitterness Preference Analysis
 
-Title: "Craft Beer:Alcohol Content and Bitterness Preference Analysis
-Authors: "Michael Catalano + Hayley Horn"
-Date: "October 20, 2018"
-Due: Thursday, October 18th 2018 One hour before live session. 
+#### Authors: "Michael Catalano + Hayley Horn"
 
-Purpose
+#### Date: "October 20, 2018"
+
+#### Due: Thursday, October 18th 2018 One hour before live session. 
+
+### Purpose
     This analysis focuses craft beer data, analysing the data on two measurements of beer composition, and some geographic details. The first measurement is Alcohol By Volume (ABV) which is a percentage that represents how much of a beer is alcohol versus other ingredients. The other measurement we will consider is International Bitterness Units (IBU) which is measured on a scale of 0 to 100 and describes the bitterness from hops in a beer. 
 
-Role in Readme creation
-     Hayley typed with Michael's input
-
-Inputs
+<i>Role in Readme creation</i> <br>
+     Hayley typed with Michael's input. We used a mix of communication modes to accomodate each other's schedules.
+    
+<b>Inputs</b>
     The Beers dataset contains a list of 2,410 US craft beers and Breweries dataset contains 558 US breweries. The datasets descriptions are as follows.
 
     Beers.csv
@@ -29,7 +30,8 @@ Inputs
      City: City where the brewery is located.
      State: U.S. State where the brewery is located.
 
-Objects
+
+<b>Objects</b>
     ABV_IBU_combined: Merge of ABV_state and IBU_state, by  the field "State"
     ABV_state: Aggregation of the ABV data from BandBs
     ABV_state_sorted: a sorted version of ABV_State
@@ -41,12 +43,14 @@ Objects
     IBU_state_sorted: a sorted version of IBU_State
     na_BandBs : this object counts the NAs in each field of the BandBs data set.
 
-Outputs
+
+<b>Outputs</b>
      Craft_Beer_Analysis.Rmd
      Craft_Beer_Analysis_Catalano_Horn.html
      Craft Beer Analysis_Presentation_Catalano_Horn.pptx
 
-Software Information
+
+<b>Software Information</b>
     R version 3.5.1 (2018-07-02)
     Platform: x86_64-w64-mingw32/x64 (64-bit)
     Running under: Windows >= 8 x64 (build 9200)
