@@ -39,9 +39,8 @@ Brew <- data.frame(read.csv("https://raw.githubusercontent.com/TheDataCurator/SM
 
 names(Beer) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces") #We renamed the fields for consistency and easier linking. Linking 2 data sets with the same field names is simpler.
 ```
-
 <br><span style="color:blue"><b>There is a great amount of variablility in number of breweries by state.</b></span><br>
-Colorado leads the country with 47 breweries, and there are 4 states that have exactly 1 at the time of the study. 
+Colorado leads the country with 47 breweries, and there are 4 states that have exactly 1 at the time of the study. Use the slider functionality if you need a specific range of values for number of breweries within a state.
 <br>
 ```{r Brewery_Count, echo=FALSE}
 #How many breweries are in each state?
