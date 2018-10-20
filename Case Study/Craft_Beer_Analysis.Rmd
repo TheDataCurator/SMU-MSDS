@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = FALSE)
 #6306-404 Case Study #1
 ```
 
-```{r Libraries = TRUE}
+```{r Libraries, echo = TRUE}
 #These are the packages used in this project.
 library(blogdown)
 library(data.table)
@@ -165,7 +165,6 @@ cor.test(ABV_IBU_combined$ABV_Pct, ABV_IBU_combined$IBUs)#This line calculates t
 ```
 
 <br><span style="color:blue"><b>In Summary</b></span>
-
 There was very little evidence of a relationship between the ABV and IBU. The state of Maine had the highest IBU content and there was a tie for alcohol content between the District of Columbia and the state of Kentucky. The chart of Beer ABV by State shows that there is some apparent groupings of states and so region may be a better way of determining ABV and IBU preferences. 
 
 For further analysis, we recommend applying demographic information to the analysis to determine if different generational segments have preferences, and regionality of preference with the target generational segments.  
