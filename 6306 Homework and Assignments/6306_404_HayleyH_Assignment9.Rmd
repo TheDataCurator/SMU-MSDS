@@ -1,0 +1,278 @@
+---
+title: "6306-404 Assignment"
+author: "Hayley Horn"
+date: "October 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Background
+
+Brewmeisters in Colorado and Texas have teamed up to analyze the relationship between ABV and IBU in each of their states.  Use the data sets from the project to help them in their analysis.  
+
+There three main questions of interest are:<br>
+     1) Is there a significant linear relationship between ABV (response) and IBU (explanatory)<br>
+     2) Is this relationship different between beers in Colorado and Texas<br>
+     3) Is there a significant quadratic component in this relationship for either Colorado or Texas or both?<br>  
+
+<b>Clean and prepare the data:</b>
+```{r Load}
+#Load the data
+Beers <- read.csv("C:/Users/ha406272/Desktop/6306/Unit9/Beers.csv")
+Brews <- read.csv("C:/Users/ha406272/Desktop/6306/Unit9/Breweries.csv")
+```
+1. Create column for brewery ID that is common to both datasets similar to what you did in the project. So we can merge!
+```{r 1}
+names(Beers) <- c("Beer_Nm","Beer_ID","ABV","IBU","Brew_ID","Style","Ounces") #We renamed the fields for consistency and easier linking. Linking 2 data sets with the same field names is simpler.
+```
+2. Merge the beer and brewery data into a single dataframe.
+```{r 2}
+BandBs <- (merge(Beers,Brews, by = "Brew_ID"))    #This small bit of code merges the data sets.
+BandBs$IBU <- as.numeric(BandBs$IBU)              #Make IBU numeric
+BandBs$ABV <- as.numeric(BandBs$ABV)              #Make ABV numeric
+BandBs <- BandBs[complete.cases(BandBs), ]        #Remove NAs
+#str(BandBs)
+#summary(BandBs)
+```
+3. Clean the State Column . get rid of extraneous white space. 
+```{r 3}
+BandBs$State = trimws(BandBs$State, "l") #First, remove whitespace from the data.
+```
+4. Create One Dataset that has only Colorado and Texas beers and no IBU NAs . name it "beerCOTX"
+```{r 4}
+#beerCOTX <- subset(BandBs, BandBs$State == c("CO","TX"))
+beerCOTX = subset(BandBs,(BandBs$State == "CO" | BandBs$State == "TX") & !is.na(IBU))
+```
+5. Order beerCOTX by IBU (ascending) ... this will be important later in graphing</b>
+```{r 5}
+#Order by IBU
+beerCOTX <- beerCOTX[order(beerCOTX$IBU),]
+```
+
+<b>Create an initial plots of the data</b><br>
+6. Plot ABV v. IBU for both Colorado and Texas using ggplot and facets.  
+
+```{r Plot, echo=FALSE}
+#Load library and ggplot data
+library(ggplot2)
+ggplot(beerCOTX, aes(x = beerCOTX$IBU, y = beerCOTX$ABV)) + geom_point() + facet_grid(. ~ State) + ylab("ABV") + xlab("IBU") + labs(title = "ABV and IBU Scatter Plot by State")  + theme(plot.title = element_text(hjust = 0.5))
+```
+
+<b>Model the data</b><br>
+
+7. For each state, fit a simple linear regression model to assess the relationship between ABV and IBU. Use the regular plot function in base R (not ggplot) to create a scatter plot with the regression line superimposed on the plot.  Again, this should be done for each state.  
+
+<u>Colorado</u><br>
+```{r co}
+par(mfrow=c(3,1))                                                           #Set plot area to 3x1
+beerCO = subset(beerCOTX,beerCOTX$State == "CO" & !is.na(IBU))                            #Subset CO data
+beerCO <- beerCO[order(beerCO$IBU),]
+beerCOlm <- lm(beerCO$ABV ~ beerCO$IBU)                                     #Linear Model
+#visualize CO lm data and residuals
+plot(beerCO$IBU,beerCO$ABV,ylab="ABV",xlab="IBU",main="CO Beer ABV vs IBU") #Plot CO abv vs ibu
+abline(beerCOlm, col = "Blue")                                              #Regression line
+beerCOresid=resid(beerCOlm)                                                 #Residuals
+plot(beerCO$IBU,beerCOresid,ylab="ABV Residuals",xlab="IBU",
+                        main="CO Beer ABV Residuals vs IBU", col = "Blue") #Plot CO residuals  
+qqnorm(beerCOresid,ylab="Residuals",xlab="Normal Score",
+                        main="CO Beer Normal QQ Plot", col = "Blue")       #QQPlot CO residuals
+```
+
+<u>Texas</u><br>
+```{r TX}
+par(mfrow=c(3,1))                                                           #Set plot area to 3x1
+beerTX = subset(beerCOTX,beerCOTX$State == "TX" & !is.na(IBU))             #subset TX data
+beerTX <- beerTX[order(beerTX$IBU),]
+beerTXlm <- lm(beerTX$ABV ~ beerTX$IBU)                                     #Linear Model
+#visualize CO lm data and residuals
+plot(beerTX$IBU,beerTX$ABV,ylab="ABV",xlab="IBU",main="TX Beer ABV vs IBU") #Plot TX abv vs ibu
+abline(beerTXlm, col = "Red")                                               #Regression line
+beerTXresid=resid(beerTXlm)                                                 #Residuals
+plot(beerTX$IBU,beerTXresid,ylab="ABV Residuals",xlab="IBU",
+                        main="TX Beer ABV Residuals vs IBU", col = "Red")   #Plot TX residuals  
+qqnorm(beerTXresid,ylab="Residuals",xlab="Normal Score",
+                        main="TX Beer Normal QQ Plot", col = "Red")         #QQPlot TX residuals
+
+```
+<br>
+8.  Address the assumptions of the regression model:<br>  
+     1) There is a normal distribution of the ABV for fixed values of IBU.<br> 
+        The CO and TX Beer ABV vs IBU plots appear to demonstrate normality
+     2) These normal distributions have equal standard deviations.<br> 
+       The CO and TX Beer QQplots show little evidence of unequal standard deviations.
+     3) The means of these normal distributions have a linear relationship with IBU.<br>
+       The data have a positive linear trend.
+     4) The data are assumed to be Independent<br>   
+
+<b>Gain Inference from the Table</b><br>
+9. Make sure and print the parameter estimate table.<br>
+```{r ColoradoBeer}
+#Colorado Parameter Estimate Table
+summary(beerCOlm)
+```
+/# # For Colorado beer, with every 1 IBU increase, the estimated ABV increases approximately 0.0315%.<br>
+```{r TexasBeer}
+#Texas Parameter Estimate Table
+summary(beerTXlm)
+```
+/# # For Texas beer, with every 1 IBU increase, the estimated ABV increases approximately 0.0489%.<br>
+<br>
+Is there evidence that he relationship between ABV and IBU is significantly different for Texas and Colorado beers? <br>  
+The relationship between ABV and IBU is not materially different between the beers of Colorado and Texas, although the ABV was a little higher for Texas.  
+<br>
+10.  Provide a confidence interval for each slope (from each state).  Provide a sentence that interprets each slope (for each state) but this time include the confidence interval in your interpretation.<br>
+```{r}
+#Colorado COnfidence Interval at alpha = .05
+confint(beerCOlm,level = .95)
+```
+/# # For Colorado beer we are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 0.043% to 0.055%.
+```{r}
+#Texas COnfidence Interval at alpha = .05
+confint(beerTXlm,level = .95)
+```
+/# # For Texas beer we are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 0.035% to 0.047% <br>
+<br>
+11.  Using the beerCOTX dataframe, add a column to the data that is the square of the IBU column.  Call it IBU2.  Print the head of the dataframe with the new column.  
+```{r 11}
+#Add new column called IBU2
+beerCOTX <- within(beerCOTX, IBU2 <- beerCOTX$IBU*beerCOTX$IBU)
+#Print head of file
+head(beerCOTX)
+summary(beerCOTX)
+```
+
+
+12. For each state, create a training and test set from the data (60%/40% split respectively).  Print a summary of each new data frame. there should be four: TrainingCO, TestCO, TrainingTX, TestTX.  
+```{r CreateSetsCO}
+#Divide CO data into training and test set into 60%/%40 training/test
+samplesizeCO = nrow(filter(beerCOTX,beerCOTX$State == "CO" & !is.na(beerCOTX$IBU)))
+train_percent = .6
+# CO random training data from original data
+train_indicesCO = sample(seq(1,samplesizeCO,length = samplesizeCO),train_percent*samplesizeCO)
+trainCO = subset(beerCOTX,beerCOTX$State == "CO" & !is.na(IBU))[train_indicesCO,] 
+# CO random test data from original data
+testCO = subset(beerCOTX,beerCOTX$State == "CO" & !is.na(IBU))[-train_indicesCO,] 
+```
+
+Summary for Colorado Training Set
+```{r TrainCO}
+#CO Summary for Training Set
+summary(trainCO)
+```
+
+Summary for Colorado Test Set
+```{r TestCO}
+# CO Summary for Test Set
+summary(testCO)
+```
+
+
+```{r CreateSetsTX}
+#Divide TX data into training and test set into 60%/%40 training/test
+samplesizeTX = nrow(filter(beerCOTX,beerCOTX$State == "TX" & !is.na(beerCOTX$IBU)))
+train_percent = .6
+# TX random training data from original data
+train_indicesTX = sample(seq(1,samplesizeCO,length = samplesizeTX),train_percent*samplesizeTX)
+trainTX = subset(beerCOTX,beerCOTX$State == "TX" & !is.na(IBU))[train_indicesTX,] 
+# TX random test data from original data
+testTX = subset(beerCOTX,beerCOTX$State == "TX" & !is.na(IBU))[-train_indicesTX,] 
+```
+
+Summary for Texas Training Set
+```{r TrainTX}
+#TX Summary for Training Set
+summary(trainTX)
+```
+
+Summary for Texas Test Set
+```{r TestTX}
+#TX Summary for Test Set
+summary(testTX)
+```
+
+13.  Brewmeisters are curious if the relationship between ABV and IBU is purely linear or if there is evidence of a quadratic component as well.  <br>
+To test this we would like to compare two models:<br>
+Model 1: Regression model<br>
+Model 2: Quadratic model<br>
+
+```{r 13co}
+
+#Fit the linear model for CO
+fitTrainCO1 = lm(ABV~IBU, data = trainCO)
+predsTrainCO1 = predict(fitTrainCO1)
+predsTestCO1 = predict(fitTrainCO1, newdata = testCO)
+
+#Fit the quadratic model for CO
+fitTrainCO2 = lm(ABV~IBU + IBU2, data = trainCO)
+predsTrainCO2 = predict(fitTrainCO2)
+predsTestCO2 = predict(fitTrainCO2, newdata = testCO)
+
+
+#MSE for the training set
+MSEholderTrainCO1 = sum((predsTrainCO1 - trainCO$ABV)^2)/(length(trainCO$ABV) - 2)
+#MSE for the Test set
+MSEholderTestCO1 = sum((predsTestCO1 - testCO$ABV)^2)/(length(testCO$ABV) - 2)
+
+
+# Calculation of the MSE for the training set
+MSEholderTrainCO2 = sum((predsTrainCO2 - trainCO$ABV)^2)/(length(trainCO$ABV) - 2)
+# Calculation of the MSE for the Test set
+MSEholderTestCO2 = sum((predsTestCO2 - testCO$ABV)^2)/(length(testCO$ABV) - 2)
+
+MSEholderTrainCO1
+MSEholderTestCO1
+
+MSEholderTrainCO2
+MSEholderTestCO2
+
+#Find Difference
+MSE_CO1=abs(MSEholderTrainCO1-MSEholderTestCO1)
+MSE_CO2=abs(MSEholderTrainCO2-MSEholderTestCO2)
+
+print(MSE_CO1)
+print(MSE_CO2)
+```
+There is less of a difference in the MSE of the Linear model versus the quadratic model, so the linear model is a better fit for the data.
+
+
+```{r 13tx}
+
+#Fit the linear model for TX
+fitTrainTX1 = lm(ABV~IBU, data = trainTX)
+predsTrainTX1 = predict(fitTrainTX1)
+predsTestTX1 = predict(fitTrainTX1, newdata = testTX)
+
+#Fit the quadratic model for TX
+fitTrainTX2 = lm(ABV~IBU + IBU2, data = trainTX)
+predsTrainTX2 = predict(fitTrainTX2)
+predsTestTX2 = predict(fitTrainTX2, newdata = testTX)
+
+
+#MSE for the training set
+MSEholderTrainTX1 = sum((predsTrainTX1 - trainTX$ABV)^2)/(length(trainTX$ABV) - 2)
+#MSE for the Test set
+MSEholderTestTX1 = sum((predsTestTX1 - testTX$ABV)^2)/(length(testTX$ABV) - 2)
+
+
+# Calculation of the MSE for the training set
+MSEholderTrainTX2 = sum((predsTrainTX2 - trainTX$ABV)^2)/(length(trainTX$ABV) - 2)
+# Calculation of the MSE for the Test set
+MSEholderTestTX2 = sum((predsTestTX2 - testTX$ABV)^2)/(length(testTX$ABV) - 2)
+
+MSEholderTrainTX1
+MSEholderTestTX1
+
+MSEholderTrainTX2
+MSEholderTestTX2
+
+#Find Difference
+MSE_TX1=abs(MSEholderTrainTX1-MSEholderTestTX1)
+MSE_TX2=abs(MSEholderTrainTX2-MSEholderTestTX2)
+
+print(MSE_TX1)
+print(MSE_TX2)
+```
+The NA values make the conclustion for this data not possible.  For the Colorado data, there is less of a difference in the MSE of the Linear model versus the quadratic model, so the linear model is a better fit for the data. 
