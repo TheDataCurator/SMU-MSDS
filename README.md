@@ -2,11 +2,11 @@ SMU-MSDS
 This little slice of paradise is to hold my homework. Enjoy your stay!
 
 Purpose
-This reposity is designed to hold home work for my DDS class and other items
+This reposity is designed to hold home work for my MSDS classes and other items
 
 Topics
-6306 Homework and Assignments
-6371 Homework and Assignments
+6306 Doing Data Science
+6371 Statistical Foundations
 Code Snips
 
 References
