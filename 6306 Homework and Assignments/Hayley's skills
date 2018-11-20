@@ -1,0 +1,9 @@
+##Hayley's Data Science Skills
+
+skills <- c("computer programming", "math", "statistics", "machine learning", "domain expertise", "communication and presentation skills", "data visualization")
+
+rank <- c(3,3,3,2,5,5,4)
+
+Hayley = data.frame(skills,rank)
+
+barplot(rank, main="Hayley's Rank", col = "light blue", names.arg=skills, cex.names =0.5)
