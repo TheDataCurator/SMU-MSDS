@@ -1,0 +1,140 @@
+---
+title: "6306-404 Assignment 12"
+author: "Hayley Horn"
+date: "November 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(gdata)
+library(fpp2)
+library(seasonal)
+library(dygraphs)
+library(forecast)
+library(tseries)
+
+```
+### Warm Up: Brief Financial Data
+1
+a. Type help(EuStockMarkets) to learn more. From these data, pull specifically the DAX index.
+
+```{r EuStockMarkets}
+# data on European stock markets
+data(EuStockMarkets)
+```
+
+b.	 Create a rudimentary plot of the German Stockmarket data. Make the line blue. Give an informative title. Label the axes accurately. In 1997, an event happened you want to indicate; add a vertical red line to your plot which divides pre-1997 and post-1997 information.
+
+```{r DAX}
+
+# data from German stock market
+Dax <- data.frame(EuStockMarkets[,"DAX"])
+
+# DAX plot with demarcation line
+plot(Dax, main = "The DAX (Deutscher Aktienindex)", sub = "The German blue chip stock market index from 1990-2000", col = "blue",xlab = "Index", ylab = "Time")
+text(1997, 2999, "Global mini-crash")
+abline(v = 1997, col = "red")
+```
+
+c.	Decompose the time series into its components (i.e., trend, seasonality, random). Keep in mind that this is a multiplicative model you want. Create a plot of all decomposed components. As before, make all lines blue and have a vertical divider at the year 1997.
+
+```{r DAX_ts}
+
+#turn EuStockMarkets into a ts data
+EUStsData <- EuStockMarkets[, 1] 
+
+# use type = "additive" for additive components used mult in this case
+EUdecomposedRes <- decompose(EUStsData, type="mult") 
+
+# Plot EUdecomposedRes
+plot (EUdecomposedRes,col = "blue") 
+abline(v = 1997, col = "red")
+stlRes <- stl(tsData, s.window = "periodic")
+
+```
+
+2.	Temperature Data (40%)
+b.	We are only concerned with information after 1990. Please eliminate unwanted information or subset information we don't care about.
+```{r maxtemp}
+
+# Look at the data https://otexts.org/fpp2/
+# summary(maxtemp)
+# head(maxtemp)
+
+#turn data from fpp2 maxtemps into a ts data from 1990+
+MAXtsData <- ts(maxtemp[20:46], frequency = 1) 
+MAXtsData
+```
+c.	Utilize SES to predict the next five years of maximum temperatures in Melbourne. 
+Plot this information, including the prior information and the forecast. 
+Add the predicted value line across 1990-present as a separate line, preferably blue. 
+So, to review, you should have your fit, the predicted value line overlaying it, and a forecast through 2021, all on one axis. 
+Find the AIC and BIC of this fitted model. You will use that information later.
+```{R SES}
+
+#Forecast 5 years 
+SESMAX <- ses(MAXtsData, h=5, initial= 'optimal')
+
+#Plot SES 5 year and past data
+plot(SESMAX,main = "Maxtemp in Melbourn plus 5 Year forecast", col = "blue",xlab = "Years starting at 1990", ylab = "Temp")
+
+#THis is not correct 
+#SESMAX AIC for 5 year forecast
+#SESMAX_AIC <- AIC(SESMAX, k = 2)
+
+#THis is not correct 
+#SESMAX BIC for 5 year forecast
+#SESMAX_BIC <- BIC(SESMAX, K = 2)
+
+```
+
+d.	Now use a damped Holt's linear trend to also predict out five years. Make sure initial="optimal." As above, create a similar plot to 1C, but use the Holt fit instead.
+```{R holt}
+
+#double exponential - forecast using Holt Winters
+MAXtsHolt <-  holt(MAXtsData, h = 5, damped = TRUE, initial = 'optimal')
+
+#Plot SES 5 year and past data
+plot(MAXtsHolt,main = "Maxtemp in Melbourn plus 5 Year Holt forecast", col = "blue",xlab = "Years starting at 1990", ylab = "Temp")
+
+#THis is not correct 
+#MAXtsHolt AIC for 5 year forecast
+#MAXtsHolt_AIC <-AIC(MAXtsfit, k=1)
+
+#THis is not correct
+#MAXtsHolt BIC for 5 year forecast
+#MAXtsHolt_BIC <-BIC(MAXtsfit, k=1)
+
+```
+
+e.	Compare the AICc and BIC of the ses() and holt() models. Which model is better here?
+```{r Comp_AIC}
+
+```
+
+f.	Calculate and compare the ASE from the ses() and holt() models. Which one performs better with respect to this metric?
+```{r Comp_BIC}
+
+```
+
+3.	The Wands Choose the Wizard (40%)
+a.	Utilize the dygraphs library. Read in both Unit12TimeSeries_Ollivander and _Gregorovitch.csv as two different data frames. They do not have headers, so make sure you account for that. This is a time series of Wands sold over years.
+```{r}
+
+```
+
+
+b.	You don't have your information in the proper format! In both data sets, you'll need to first convert the date-like variable to an actual Date class.
+c.	Use the library xts (and the xts() function in it) to make each data frame an xts object (effectively, a time series). You'll want to order.by the Date variable.
+d.	Bind the two xts objects together and create a dygraph from it. Utilize the help() index if you're stuck.
+.	Give an effective title and x/y axes.
+.	Label each Series (via dySeries) to be the appropriate wand-maker. So, one line should create a label for Ollivander and the other for Gregorovitch.
+.	Stack this graph and modify the two lines to be different colors (and not the default ones!) Any colors are fine, but make sure they're visible and that Ollivander is a different color than Gregorovitch.
+.	Activate a range selector and make it big enough to view.
+.	Use dyShading to illuminate approximately when Voldemort was revived and at-large: between 1995 to 1999.
+.	Enable Highlighting on the graph, so mousing over a line bolds it.
+
